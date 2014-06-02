@@ -1,0 +1,38 @@
+{
+  "name": "passport-servant",
+  "version": "0.1.0",
+  "description": "Servant authentication strategy for Passport",
+  "main": "index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url":  "git://github.com/ac360/servant-passport.git"
+  },
+  "keywords": [
+    "passport",
+    "auth",
+    "authentication",
+    "servant",
+    "api",
+    "content",
+    "cloud",
+    "storage",
+    "archetypes",
+    "content",
+    "archetypes",
+    "servants"
+  ],
+  "author": "Austen Collins <austen@servant.co> (http://servant.co/)",
+  "license": "MIT",
+  "dependencies": {
+    "passport-oauth2": "1.x.x"
+  },
+  "bugs": {
+    "url": "https://github.com/ac360/servant-passport/issues"
+  },
+  "homepage": "https://github.com/ac360/servant-passport",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/ac360/servant-passport.git"
+  },
+}
