@@ -1,17 +1,18 @@
+'use strict';
+
 /**
  * Module dependencies.
  */
-var util                = require('util')
-  , OAuth2Strategy      = require('passport-oauth2')
-  , Profile             = require('./profile')
-  , InternalOAuthError  = require('passport-oauth2').InternalOAuthError;
-
+var util = require('util')
+  , OAuth2Strategy = require('passport-oauth').OAuth2Strategy
+  , InternalOAuthError = require('passport-oauth').InternalOAuthError
+  ;
 
 /**
  * `Strategy` constructor.
  *
- * The Servant authentication strategy authenticates requests by delegating to
- * Servant using the OAuth 2.0 protocol.
+ * The example-oauth2orize authentication strategy authenticates requests by delegating to
+ * example-oauth2orize using the OAuth 2.0 protocol.
  *
  * Applications must supply a `verify` callback which accepts an `accessToken`,
  * `refreshToken` and service-specific `profile`, and then calls the `done`
@@ -19,22 +20,18 @@ var util                = require('util')
  * credentials are not valid.  If an exception occured, `err` should be set.
  *
  * Options:
- *   - `clientID`      your Servant application's Client ID
- *   - `clientSecret`  your Servant application's Client Secret
- *   - `callbackURL`   URL to which Servant will redirect the user after granting authorization
- *   — `userAgent`     All API requests MUST include a valid User Agent string.
- *                     e.g: domain name of your application.
- *                     (see http://developer.github.com/v3/#user-agent-required for more info)
+ *   - `clientID`      your example-oauth2orize application's client id
+ *   - `clientSecret`  your example-oauth2orize application's client secret
+ *   - `callbackURL`   URL to which example-oauth2orize will redirect the user after granting authorization
  *
  * Examples:
  *
- *     passport.use(new GitHubStrategy({
+ *     passport.use(new ExampleStrategy({
  *         clientID: '123-456-789',
  *         clientSecret: 'shhh-its-a-secret'
- *         callbackURL: 'https://www.example.net/auth/github/callback',
- *         userAgent: 'myapp.com'
+ *         callbackURL: 'https://www.example.net/auth/example-oauth2orize/callback'
  *       },
- *       function(accessToken, refreshToken, profile, done) {
+ *       function (accessToken, refreshToken, profile, done) {
  *         User.findOrCreate(..., function (err, user) {
  *           done(err, user);
  *         });
@@ -46,20 +43,21 @@ var util                = require('util')
  * @api public
  */
 function Strategy(options, verify) {
-  options                   = options || {};
-  options.authorizationURL  = options.authorizationURL || 'http://servant.co/oauth/authorize';
-  options.tokenURL          = options.tokenURL         || 'http://servant.co/oauth/authorize/decision';
-  options.scopeSeparator    = options.scopeSeparator   || ',';
-  options.customHeaders     = options.customHeaders    || {};
+  var me = this
+    ;
 
-  if (!options.customHeaders['User-Agent']) {
-    options.customHeaders['User-Agent'] = options.userAgent || 'passport-servant';
-  }
+  options = options || {};
+  options.authorizationURL = 
+    options.authorizationURL || 
+    options.authorizationUrl;
+  options.tokenURL =
+    options.tokenURL ||
+    options.tokenUrl;
+  
+  OAuth2Strategy.call(me, options, verify);
 
-  OAuth2Strategy.call(this, options, verify);
-  this.name            = 'servant';
-  this._userProfileURL = options.userProfileURL || 'http://servant.co/api/v1/user';
-  this._oauth2.useAuthorizationHeaderforGET(true);
+  // must be called after prototype is modified
+  me.name = 'servant';
 }
 
 /**
@@ -69,46 +67,53 @@ util.inherits(Strategy, OAuth2Strategy);
 
 
 /**
- * Retrieve user profile from GitHub.
+ * Retrieve user profile from example-oauth2orize.
  *
  * This function constructs a normalized profile, with the following properties:
  *
- *   - `provider`         always set to `github`
- *   - `id`               the user's GitHub ID
- *   - `username`         the user's GitHub username
- *   - `displayName`      the user's full name
- *   - `profileUrl`       the URL of the profile for the user on GitHub
- *   - `emails`           the user's email addresses
+ *   - `provider`         always set to `example-oauth2orize`
+ *   - `id`
+ *   - `username`
+ *   - `displayName`
  *
  * @param {String} accessToken
  * @param {Function} done
  * @api protected
  */
-Strategy.prototype.userProfile = function(accessToken, done) {
-  this._oauth2.get(this._userProfileURL, accessToken, function (err, body, res) {
-    var json;
-    
-    if (err) {
-      return done(new InternalOAuthError('Failed to fetch user profile', err));
-    }
-    
-    try {
-      json = JSON.parse(body);
-    } catch (ex) {
-      return done(new Error('Failed to parse user profile'));
-    }
-    
-    var profile = Profile.parse(json);
-    profile.provider  = 'github';
-    profile._raw = body;
-    profile._json = json;
-    
-    done(null, profile);
-  });
-}
+Strategy.prototype.userProfile = function (accessToken, done) {
+  console.log(accessToken);
+  return false;
+  // var me = this
+  //   ;
 
+  // me._oauth2.get(
+  //   pConf.protocol + '://' + pConf.host + pConf.profileUrl
+  // , accessToken
+  // , function (err, body/*, res*/) {
+  //     var json
+  //       , profile
+  //       ;
+
+  //     if (err) { return done(new InternalOAuthError('failed to fetch user profile', err)); }
+      
+  //     if ('string' === typeof body) {
+  //       try { json = JSON.parse(body); }
+  //       catch(e) { done(e); return; }
+  //     } else if ('object' === typeof body) {
+  //       json = body;
+  //     }
+
+  //     profile = parse(json);
+  //     profile.provider = me.name;
+  //     profile._raw = body;
+  //     profile._json = json;
+
+  //     done(null, profile);
+  //   }
+  // );
+};
 
 /**
  * Expose `Strategy`.
  */
-module.exports = Strategy;
+module.exports.Strategy = Strategy.Strategy = Strategy;
